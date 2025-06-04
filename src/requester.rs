@@ -24,7 +24,7 @@ impl Requester {
         //     .send()
         //     .await?;
     //}
-    println!("Sending request to: {}", conversation.to_json());
+    //println!("Sending request to: {}", conversation.to_json());
     let response = self.client.post(self.url.clone())
     .header("Authorization", format!("Bearer {}", self.api_key))
     .header("Content-Type", "application/json")
@@ -32,7 +32,7 @@ impl Requester {
     .send()
     .await?;
     let body = response.text().await.expect("Failed to get response body");
-    println!("Body: {:?}", body);
+    //println!("Body: {:?}", body);
     let response: Response = serde_json::from_str(&body).expect("stuff");
     Ok(response)
     }

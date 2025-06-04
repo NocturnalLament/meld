@@ -8,7 +8,7 @@ pub struct Model {
     pub input: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ModelMessage {
     pub role: String,
     pub content: String,

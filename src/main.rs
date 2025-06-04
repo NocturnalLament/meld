@@ -19,8 +19,13 @@ async fn main() {
     let mut conversation = conversation::convo::Conversation::new(model::ChatModels::Gpt4oMini.model_string(), Vec::new());
     conversation.add_message(ModelMessage { role:"system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
     while running {
+        conversation.reset_messages();
         if conversation.messages_saveworthy() {
-            conversation.save_messages("conversation".to_string()).await;
+            if conversation::convo::Conversation::file_exists("conversation".to_string()) {
+                conversation.append_messages("conversation".to_string()).await;
+            } else {
+                conversation.save_messages("conversation".to_string()).await;
+            }
             conversation.reset_messages();
         }
         println!("Enter a message: ");
