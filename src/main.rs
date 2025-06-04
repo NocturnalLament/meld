@@ -17,7 +17,7 @@ async fn main() {
     let url = "https://api.openai.com/v1/responses";
     let requester = requester::requester_factory(api_key.clone(), url.to_string());
     let mut conversation = conversation::convo::Conversation::new(model::ChatModels::Gpt4oMini.model_string(), Vec::new());
-    conversation.add_message(ModelMessage { role:"system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
+    conversation.add_message(ModelMessage { id: None, role:"system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
     while running {
         conversation.reset_messages();
         if conversation.messages_saveworthy() {
@@ -41,16 +41,21 @@ async fn main() {
         }
         
         println!("Asking...");
-        conversation.add_message(ModelMessage::new("user".to_string(), message.to_string()));
+        conversation.add_message(ModelMessage::new( None, "user".to_string(), message.to_string()));
         let response = requester.send_request(&conversation).await;
         match response {
             Ok(response) => {
                 //println!("Response: {:?}", response);
                 //println!("Response: {:?}", response.output[0].content[0].text);
                 let content = response.output[0].content[0].text.clone();
+                let id = response.output[0].id.clone();
+                conversation.add_message(ModelMessage::new( Some(id.clone()), "assistant".to_string(), content.clone()));
                 println!("Content: {:?}", content);
-                conversation.add_message(ModelMessage::new("assistant".to_string(), content.clone()));
-                
+                //println!("ID: {:?}", &id);
+                //conversation.add_message(ModelMessage::new(,"assistant".to_string(), content.clone()));
+                //let test_message = serde_json::from_str::<ModelMessage>(&content).expect("Failed to deserialize message");
+                //conversation.add_message(test_message);
+                //println!("Test message: {:?}", test_message.id);
             }
             Err(e) => {
                 println!("Error: {:?}", e);

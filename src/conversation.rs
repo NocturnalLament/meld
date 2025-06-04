@@ -61,7 +61,7 @@ pub mod convo {
 
         pub fn reset_messages(&mut self) {
             self.messages.clear();
-            self.messages.push(ModelMessage { role: "system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
+            self.messages.push(ModelMessage { id: None, role: "system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
         }
 
         pub fn file_exists(file_name: String) -> bool {

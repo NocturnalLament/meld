@@ -10,6 +10,7 @@ pub struct Model {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ModelMessage {
+    pub id: Option<String>,
     pub role: String,
     pub content: String,
 }
@@ -57,8 +58,8 @@ impl Model {
 }
 
 impl ModelMessage {
-    pub fn new(role: String, content: String) -> Self {
-        ModelMessage { role, content }
+    pub fn new(id: Option<String>, role: String, content: String) -> Self {
+        ModelMessage { id, role, content }
     }
 
     pub fn to_json(&self) -> String {
