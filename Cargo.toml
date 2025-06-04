@@ -1,0 +1,12 @@
+[package]
+name = "meld"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = {version =  "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+serde_yaml = "0.9"
+tokio = { version = "1.45.1", features = ["full"] }
+reqwest = "0.12.19"
+dotenv = "0.15.0"
