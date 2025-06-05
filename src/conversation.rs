@@ -5,6 +5,8 @@ pub mod convo {
     use serde_json;
     use crate::model::ModelMessage;
     use std::path::Path;
+    use std::collections::HashSet;
+    use tokio::fs::OpenOptions;
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Conversation {
@@ -47,12 +49,20 @@ pub mod convo {
             messages
         }
         pub async fn append_messages(&mut self, file_name: String) {
-            let mut existing = Self::load_messages(file_name.clone()).await;
-            existing.extend(self.messages.clone());
-            let yaml = serde_yaml::to_string(&existing).expect("Failed to serialize messages");
-            let file_path = format!("{}.yaml", file_name);
-            let mut file = File::create(file_path).await.expect("Failed to create file");
-            file.write_all(yaml.as_bytes()).await.expect("Failed to write to file");
+            
+            // let yaml = serde_yaml::to_string(&existing).expect("Failed to serialize messages");
+            // let file_path = format!("{}.yaml", file_name);
+            // let mut file = File::open(file_path).await.expect("Failed to create file");
+            // file.write_all(yaml.as_bytes()).await.expect("Failed to write to file");
+            let mut file = OpenOptions::new()
+                .append(true)
+                .create(true)
+                .open(format!("{}.yaml", file_name))
+                .await
+                .expect("Failed to open file");
+            file.write_all(serde_yaml::to_string(&self.messages).expect("Failed to serialize messages").as_bytes())
+                .await
+                .expect("Failed to write to file");
         }
 
         pub fn messages_saveworthy(&self) -> bool {

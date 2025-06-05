@@ -19,7 +19,7 @@ async fn main() {
     let mut conversation = conversation::convo::Conversation::new(model::ChatModels::Gpt4oMini.model_string(), Vec::new());
     conversation.add_message(ModelMessage { id: None, role:"system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
     while running {
-        conversation.reset_messages();
+        //conversation.reset_messages();
         if conversation.messages_saveworthy() {
             if conversation::convo::Conversation::file_exists("conversation".to_string()) {
                 conversation.append_messages("conversation".to_string()).await;
@@ -51,6 +51,33 @@ async fn main() {
                 let id = response.output[0].id.clone();
                 conversation.add_message(ModelMessage::new( Some(id.clone()), "assistant".to_string(), content.clone()));
                 println!("Content: {:?}", content);
+                println!("len: {:?}", conversation.messages.len());
+                if conversation.messages_saveworthy() {
+                    // conversation.save_messages("conversation".to_string()).await;
+                    // println!("Messages saved");
+                    // //conversation.reset_messages();
+                    // let last_message = conversation.messages.last().unwrap().clone();
+                    // conversation.reset_messages();
+                    // conversation.add_message(ModelMessage { id: None, role: "system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
+                    // conversation.add_message(last_message.clone());
+                    if conversation::convo::Conversation::file_exists("conversation".to_string()) {
+                        //conversation.append_messages("conversation".to_string()).await;
+                        conversation.append_messages("conversation".to_string()).await;
+                        println!("Messages appended");
+                        //conversation.reset_messages();
+                        let last_message = conversation.messages.last().unwrap().clone();
+                        conversation.reset_messages();
+                        conversation.add_message(ModelMessage { id: None, role: "system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
+                        conversation.add_message(last_message);
+                    } else {
+                        conversation.save_messages("conversation".to_string()).await;
+                        println!("Messages saved");
+                        let last_message = conversation.messages.last().unwrap().clone();
+                        conversation.reset_messages();
+                        conversation.add_message(ModelMessage { id: None, role: "system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
+                        conversation.add_message(last_message.clone());
+                    }
+                }
                 //println!("ID: {:?}", &id);
                 //conversation.add_message(ModelMessage::new(,"assistant".to_string(), content.clone()));
                 //let test_message = serde_json::from_str::<ModelMessage>(&content).expect("Failed to deserialize message");
