@@ -106,16 +106,14 @@ async fn main() {
             running = false;
             continue;
         } else if message == "save-conversation" {
+            println!("Enter a file name: ");
+            let mut file_name = String::new();
+            std::io::stdin().read_line(&mut file_name).expect("Failed to read line");
+            let file_name = file_name.trim();
             let file_base = "saved_conversations".to_string();
             let exists = file_logic::file_logic::check_for_conversation_file(&file_base);
-            if exists {
-                let files = file_logic::file_logic::get_conversation_files(&file_base).await;
-                let highest_number = file_logic::file_logic::get_highest_conversation_number(&files).await;
-                let file_name = format!("{}-{:03}", file_base, highest_number + 1);
-                conversation.save_messages(file_name).await;
-            } else {
-                let file_name = format!("{}-{:03}", file_base, 1);
-                conversation.save_messages(file_name).await;
+            if !exists {
+                conversation.save_messages(file_name.to_string()).await;
             }
             continue;
         }
