@@ -106,7 +106,18 @@ async fn main() {
             running = false;
             continue;
         } else if message == "save-conversation" {
-            
+            let file_base = "saved_conversations".to_string();
+            let exists = file_logic::file_logic::check_for_conversation_file(&file_base);
+            if exists {
+                let files = file_logic::file_logic::get_conversation_files(&file_base).await;
+                let highest_number = file_logic::file_logic::get_highest_conversation_number(&files).await;
+                let file_name = format!("{}-{:03}", file_base, highest_number + 1);
+                conversation.save_messages(file_name).await;
+            } else {
+                let file_name = format!("{}-{:03}", file_base, 1);
+                conversation.save_messages(file_name).await;
+            }
+            continue;
         }
         
         println!("Asking...");
