@@ -9,15 +9,26 @@ mod conversation;
 mod roles;
 mod requester;
 mod model;
+mod configurator;
 #[tokio::main]
 async fn main() {
+    let config_file_name = "config".to_string();
+    let mut config = configurator::configurator::default_config();
+    if !configurator::configurator::file_exists(&config_file_name) {
+        let config = configurator::configurator::default_config();
+        config.save_config(&config_file_name).await;
+        println!("Config file created");
+    } else {
+        config = configurator::configurator::load_config(config_file_name).await;
+        println!("Config file loaded");
+    }
     dotenv().ok();
     let mut running = true;
     let api_key = env::var("OPEN_API").expect("API_KEY must be set");
     let url = "https://api.openai.com/v1/responses";
     let requester = requester::requester_factory(api_key.clone(), url.to_string());
     let mut conversation = conversation::convo::Conversation::new(model::ChatModels::Gpt4oMini.model_string(), Vec::new());
-    conversation.add_message(ModelMessage { id: None, role:"system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
+    conversation.add_message(ModelMessage { id: None, role:"system".to_string(), content: config.model_prompt });
     while running {
         //conversation.reset_messages();
         if conversation.messages_saveworthy() {
