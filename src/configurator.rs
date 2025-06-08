@@ -7,7 +7,7 @@ pub mod configurator {
     use tokio::fs::OpenOptions;
     use std::env;
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct Config {
         pub model: String,
         pub model_name: String,
@@ -23,7 +23,15 @@ pub mod configurator {
 
     impl Config {
         pub fn new(model: String, model_name: String, model_prompt: String, message_retention_limit: u32, message_retention_maximum: u32, conversation_file_name: String, conversation_file_path: String, config_file_name: String, config_file_path: String, env_key: String) -> Self {
+            
             Config { model, model_name, model_prompt, message_retention_limit, message_retention_maximum, conversation_file_name, conversation_file_path, config_file_name, config_file_path, env_key }
+        }
+
+        pub fn initialize_prompt(&mut self) {
+            let mut prompt = self.model_prompt.clone();
+            let bot_name = self.model_name.clone();
+            prompt.push_str(format!("You are named {bot_name}").as_str());
+            self.model_prompt = prompt;
         }
 
         pub fn to_yaml(&self) -> String {
@@ -59,8 +67,8 @@ pub mod configurator {
         
         Config {
             model: "gpt-4o-mini".to_string(),
-            model_name: "gpt-4o-mini".to_string(),
-            model_prompt: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string(),
+            model_name: "Cyndi".to_string(),
+            model_prompt: "You are my ditzy valley girl best friend that is obsessed with all things adorable and frequently gets distracted".to_string(),
             message_retention_limit: 10,
             message_retention_maximum: 20,
             conversation_file_name: "conversation".to_string(),
