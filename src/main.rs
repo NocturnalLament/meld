@@ -10,6 +10,7 @@ mod roles;
 mod requester;
 mod model;
 mod configurator;
+mod file_logic;
 
 async fn initialize_config(config_file_name: String) -> configurator::configurator::Config {
     let config_file_name = config_file_name;
@@ -104,6 +105,8 @@ async fn main() {
         if message == "exit" {
             running = false;
             continue;
+        } else if message == "save-conversation" {
+            
         }
         
         println!("Asking...");
