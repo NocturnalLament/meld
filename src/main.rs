@@ -1,7 +1,5 @@
 use dotenv::dotenv;
-use std::env;
-use serde_json;
-use model_response::response::Response;
+
 use roles::roles::Role;
 use model::ModelMessage;
 mod model_response;
@@ -116,6 +114,16 @@ async fn main() {
                 let file_name = format!("{}-{}", file_name, "saved");
                 conversation.save_messages(file_name.to_string()).await;
             }
+            continue;
+        } else if message == "load-conversation" {
+            let conversation_list = file_logic::file_logic::get_saved_conversations().await;
+            file_logic::file_logic::display_conversation_list(&conversation_list);
+            println!("Enter a conversation name: ");
+            let mut conversation_name = String::new();
+            std::io::stdin().read_line(&mut conversation_name).expect("Failed to read line");
+            let conversation_name = conversation_name.trim().to_string();
+            conversation = file_logic::file_logic::load_conversation(&conversation_name).await;
+            //conversation.display_conversation();
             continue;
         }
         

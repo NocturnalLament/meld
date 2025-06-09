@@ -1,9 +1,11 @@
 pub mod file_logic {
     use std::path::Path;
-    use tokio::fs::OpenOptions;
     use tokio::fs;
     use std::env;
     use serde_yaml;
+    use crate::conversation::convo;
+    use crate::model::ModelMessage;
+    use crate::model::ChatModels;
 
     pub fn check_for_conversation_file(file_name: &String) -> bool {
         let mut file_path_base_env = env::current_dir().expect("Failed to get current directory");
@@ -50,4 +52,27 @@ pub mod file_logic {
         }
         files
     }
+
+    pub async fn load_conversation(file_name: &String) -> convo::Conversation {
+        let mut file_path_base_env = env::current_dir().expect("Failed to get current directory");
+        file_path_base_env.push(file_name);
+        let file_path = file_path_base_env.to_str().expect("Failed to convert path to string");
+        let file = fs::read_to_string(file_path).await.expect("Failed to read file");
+         // Parse the messages array first
+        let messages: Vec<ModelMessage> = serde_yaml::from_str(&file).expect("Failed to parse messages");
+        
+        // Create a new conversation with the loaded messages
+        let conversation = convo::Conversation::new(
+            ChatModels::Gpt4oMini.model_string(),
+            messages
+        );
+        conversation
+    }
+
+    pub fn display_conversation_list(conversation_list: &Vec<String>) {
+        for conversation in conversation_list {
+            println!("{}", conversation);
+        }
+    }
+
 }
