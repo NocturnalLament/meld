@@ -37,4 +37,17 @@ pub mod file_logic {
         }
         highest_number
     }
+
+    pub async fn get_saved_conversations() -> Vec<String> {
+        let mut files: Vec<String> = Vec::new();
+        let file_path_base_env = env::current_dir().expect("Failed to get current directory");
+        let mut all_files = fs::read_dir(file_path_base_env).await.expect("Failed to read directory");
+        while let Some(file) = all_files.next_entry().await.expect("Failed to get file") {
+            let path = file.path();
+            let file_name = path.file_name().expect("Failed to get file name").to_str().expect("Failed to convert file name to string");
+            let file_name_without_extension = file_name.split(".").next().expect("Failed to get file name without extension");
+            files.push(file_name_without_extension.to_string());
+        }
+        files
+    }
 }

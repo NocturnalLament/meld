@@ -113,6 +113,7 @@ async fn main() {
             let file_base = "saved_conversations".to_string();
             let exists = file_logic::file_logic::check_for_conversation_file(&file_base);
             if !exists {
+                let file_name = format!("{}-{}", file_name, "saved");
                 conversation.save_messages(file_name.to_string()).await;
             }
             continue;
