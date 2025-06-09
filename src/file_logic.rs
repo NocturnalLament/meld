@@ -17,7 +17,7 @@ pub mod file_logic {
 
     pub async fn get_conversation_files(save_file_name: &String) -> Vec<String> {
         let mut files: Vec<String> = Vec::new();
-        let mut file_path_base_env = env::current_dir().expect("Failed to get current directory");
+        let file_path_base_env = env::current_dir().expect("Failed to get current directory");
         let mut all_files = fs::read_dir(file_path_base_env).await.expect("Failed to read directory");
         while let Some(file) = all_files.next_entry().await.expect("Failed to get file") {
             let path = file.path();

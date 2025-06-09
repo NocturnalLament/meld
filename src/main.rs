@@ -1,6 +1,5 @@
 use dotenv::dotenv;
 
-use roles::roles::Role;
 use model::ModelMessage;
 mod model_response;
 mod conversation;

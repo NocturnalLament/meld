@@ -1,7 +1,5 @@
-use reqwest::{Client, header::{HeaderMap, HeaderValue, HeaderName, AUTHORIZATION, CONTENT_TYPE}};
-use crate::conversation::convo::Conversation;
+use reqwest::{Client, header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE}};
 use crate::model_response::response::Response;
-use crate::model::ModelMessage;
 use crate::model_response;
 use crate::conversation;
 

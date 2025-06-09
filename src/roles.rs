@@ -1,5 +1,5 @@
 pub mod roles {
-    use serde::{Serialize, Deserialize};
+    
     use serde;
     // pub const USER: &str = "user";
     // pub const ASSISTANT: &str = "assistant";
