@@ -16,13 +16,6 @@ impl Requester {
     }
 
     pub async fn send_request(&self, conversation: &conversation::convo::Conversation) -> Result<model_response::response::Response, reqwest::Error> {
-        // let response = self.client.post(self.url.clone())
-        //     .headers(self.headers.clone())
-        //     .body(conversation.to_json())
-        //     .send()
-        //     .await?;
-    //}
-    //println!("Sending request to: {}", conversation.to_json());
     let response = self.client.post(self.url.clone())
     .header("Authorization", format!("Bearer {}", self.api_key))
     .header("Content-Type", "application/json")

@@ -31,26 +31,15 @@ async fn initialize_config(config_file_name: String) -> configurator::configurat
 async fn handle_conversation(response: &Result<model_response::response::Response, reqwest::Error>, config: &configurator::configurator::Config, requester: &requester::Requester, conversation: &mut conversation::convo::Conversation) {
     match response {
         Ok(response) => {
-            //println!("Response: {:?}", response);
-            //println!("Response: {:?}", response.output[0].content[0].text);
             let content = response.output[0].content[0].text.clone();
             let id = response.output[0].id.clone();
             conversation.add_message(ModelMessage::new( Some(id.clone()), "assistant".to_string(), content.clone()));
             println!("Content: {:?}", content);
             println!("len: {:?}", conversation.messages.len());
             if conversation.messages_saveworthy() {
-                // conversation.save_messages("conversation".to_string()).await;
-                // println!("Messages saved");
-                // //conversation.reset_messages();
-                // let last_message = conversation.messages.last().unwrap().clone();
-                // conversation.reset_messages();
-                // conversation.add_message(ModelMessage { id: None, role: "system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
-                // conversation.add_message(last_message.clone());
                 if conversation::convo::Conversation::file_exists("conversation".to_string()) {
-                    //conversation.append_messages("conversation".to_string()).await;
                     conversation.append_messages("conversation".to_string()).await;
                     println!("Messages appended");
-                    //conversation.reset_messages();
                     let last_message = conversation.messages.last().unwrap().clone();
                     conversation.reset_messages();
                     conversation.add_message(ModelMessage { id: None, role: "system".to_string(), content: "You are a ditzy valley girl secretary that is obsessed with all things adorable and frequently gets distracted".to_string() });
@@ -64,11 +53,7 @@ async fn handle_conversation(response: &Result<model_response::response::Respons
                     conversation.add_message(last_message.clone());
                 }
             }
-            //println!("ID: {:?}", &id);
-            //conversation.add_message(ModelMessage::new(,"assistant".to_string(), content.clone()));
-            //let test_message = serde_json::from_str::<ModelMessage>(&content).expect("Failed to deserialize message");
-            //conversation.add_message(test_message);
-            //println!("Test message: {:?}", test_message.id);
+            
         }
         Err(e) => {
             println!("Error: {:?}", e);
