@@ -36,7 +36,7 @@ async fn handle_conversation(response: &Result<model_response::response::Respons
             conversation.add_message(ModelMessage::new( Some(id.clone()), "assistant".to_string(), content.clone()));
             println!("Content: {:?}", content);
             println!("len: {:?}", conversation.messages.len());
-            if conversation.messages_saveworthy() {
+            if conversation.messages_saveworthy(&config.message_retention_maximum) {
                 if conversation::convo::Conversation::file_exists("conversation".to_string()) {
                     conversation.append_messages("conversation".to_string()).await;
                     println!("Messages appended");
@@ -63,17 +63,26 @@ async fn handle_conversation(response: &Result<model_response::response::Respons
 
 #[tokio::main]
 async fn main() {
+    // Initialize the config file
     let config = initialize_config("config".to_string()).await;
     dotenv().ok();
+    // initialize the variable that runs the loop
     let mut running = true;
+    // Store the api key
     let api_key = &config.env_key;
+    // url for the api
     let url = "https://api.openai.com/v1/responses";
+    // run the requester factory.
     let requester = requester::requester_factory(api_key.clone(), url.to_string());
+    // Initialize the conversation object. This needs the model type and the vector of messages (empty vector here.)
     let mut conversation = conversation::convo::Conversation::new(model::ChatModels::Gpt4oMini.model_string(), Vec::new());
+    // 
     conversation.add_message(ModelMessage { id: None, role:"system".to_string(), content: config.model_prompt.clone() });
     while running {
         //conversation.reset_messages();
-        if conversation.messages_saveworthy() {
+        // determines whether or not the conversations should be saved.
+        if conversation.messages_saveworthy(&config.message_retention_maximum) {
+            // check the file exists.
             if conversation::convo::Conversation::file_exists("conversation".to_string()) {
                 conversation.append_messages("conversation".to_string()).await;
             } else {
