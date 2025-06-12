@@ -10,8 +10,11 @@ pub struct Model {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ModelMessage {
+    // Id of the message (optional)
     pub id: Option<String>,
+    // Assistants role.
     pub role: String,
+    // Content of the message.
     pub content: String,
 }
 
@@ -58,10 +61,12 @@ impl Model {
 }
 
 impl ModelMessage {
+    // Create new model message with optional id, role, and content.
     pub fn new(id: Option<String>, role: String, content: String) -> Self {
         ModelMessage { id, role, content }
     }
 
+    // Formats it to json.
     pub fn to_json(&self) -> String {
         match serde_json::to_string(self) {
             Ok(json) => json,

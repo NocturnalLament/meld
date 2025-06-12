@@ -1,7 +1,5 @@
-use reqwest::{Client, header::{HeaderMap, HeaderValue, HeaderName, AUTHORIZATION, CONTENT_TYPE}};
-use crate::conversation::convo::Conversation;
+use reqwest::{Client, header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE}};
 use crate::model_response::response::Response;
-use crate::model::ModelMessage;
 use crate::model_response;
 use crate::conversation;
 
@@ -17,31 +15,38 @@ impl Requester {
         Requester { client, url, api_key }
     }
 
+    // send the request.
     pub async fn send_request(&self, conversation: &conversation::convo::Conversation) -> Result<model_response::response::Response, reqwest::Error> {
-        // let response = self.client.post(self.url.clone())
-        //     .headers(self.headers.clone())
-        //     .body(conversation.to_json())
-        //     .send()
-        //     .await?;
-    //}
-    //println!("Sending request to: {}", conversation.to_json());
-    let response = self.client.post(self.url.clone())
-    .header("Authorization", format!("Bearer {}", self.api_key))
-    .header("Content-Type", "application/json")
-    .body(conversation.to_json())
-    .send()
-    .await?;
-    let body = response.text().await.expect("Failed to get response body");
-    //println!("Body: {:?}", body);
-    let response: Response = serde_json::from_str(&body).expect("stuff");
-    Ok(response)
+        // Format the response
+        let response = self.client.post(self.url.clone())
+        // Auth header
+        .header("Authorization", format!("Bearer {}", self.api_key))
+        // tells header that the data is json.
+        .header("Content-Type", "application/json")
+        // sets the body to the conversation.
+        .body(conversation.to_json())
+        // Sends it
+        .send()
+        .await?;
+
+        // retrieves the body from the response.
+        let body = response.text().await.expect("Failed to get response body");
+        //println!("Body: {:?}", body);
+        // formats the body as json.
+        let response: Response = serde_json::from_str(&body).expect("stuff");
+        // returns ok
+        Ok(response)
     }
 }
 
 pub fn requester_factory(api_key: String, url: String) -> Requester {
+    // Initialize the client.
     let client = Client::new();
+    // Sets the client.
     let key = api_key.clone();
+    // Sets the headers to the api key.
     let headers = generate_headers(api_key);
+    // initialize and return the requester.
     Requester::new(client, url, key, headers)
 }
 

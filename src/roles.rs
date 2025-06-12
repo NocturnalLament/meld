@@ -1,9 +1,4 @@
 pub mod roles {
-    use serde::{Serialize, Deserialize};
-    use serde;
-    // pub const USER: &str = "user";
-    // pub const ASSISTANT: &str = "assistant";
-    // pub const SYSTEM: &str = "system";
     pub enum Role {
         User,
         Assistant,
