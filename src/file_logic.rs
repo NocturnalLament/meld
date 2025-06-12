@@ -53,14 +53,15 @@ pub mod file_logic {
         files
     }
 
-    pub async fn load_conversation(file_name: &String) -> convo::Conversation {
+    pub async fn load_conversation(file_name: &String, personality_prompt: &String) -> convo::Conversation {
         let mut file_path_base_env = env::current_dir().expect("Failed to get current directory");
         file_path_base_env.push(file_name);
         let file_path = file_path_base_env.to_str().expect("Failed to convert path to string");
         let file = fs::read_to_string(file_path).await.expect("Failed to read file");
          // Parse the messages array first
-        let messages: Vec<ModelMessage> = serde_yaml::from_str(&file).expect("Failed to parse messages");
-        
+        let mut messages: Vec<ModelMessage> = serde_yaml::from_str(&file).expect("Failed to parse messages");
+        let personality_prompt = ModelMessage { id: None, role: "system".to_string(), content: personality_prompt.to_string() };
+        messages.insert(0, personality_prompt);
         // Create a new conversation with the loaded messages
         let conversation = convo::Conversation::new(
             ChatModels::Gpt4oMini.model_string(),

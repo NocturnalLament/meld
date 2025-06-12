@@ -28,10 +28,11 @@ impl Requester {
         // Sends it
         .send()
         .await?;
-
         // retrieves the body from the response.
         let body = response.text().await.expect("Failed to get response body");
-        //println!("Body: {:?}", body);
+        // let message = serde_json::to_string_pretty(&body).unwrap();
+        // let message_json = format!("Body: {:?}", message);
+        // println!("{}", message_json);
         // formats the body as json.
         let response: Response = serde_json::from_str(&body).expect("stuff");
         // returns ok

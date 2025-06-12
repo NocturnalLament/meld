@@ -31,8 +31,9 @@ async fn initialize_config(config_file_name: String) -> configurator::configurat
 async fn handle_conversation(response: &Result<model_response::response::Response, reqwest::Error>, config: &configurator::configurator::Config, requester: &requester::Requester, conversation: &mut conversation::convo::Conversation) {
     match response {
         Ok(response) => {
-            let content = response.output[0].content[0].text.clone();
-            let id = response.output[0].id.clone();
+            //let content = response.output[0].content[0].text.clone();
+            let content = &response.choices[0].message.content;
+            let id = &response.id;
             conversation.add_message(ModelMessage::new( Some(id.clone()), "assistant".to_string(), content.clone()));
             println!("Content: {:?}", content);
             println!("len: {:?}", conversation.messages.len());
@@ -71,7 +72,7 @@ async fn main() {
     // Store the api key
     let api_key = &config.env_key;
     // url for the api
-    let url = "https://api.openai.com/v1/responses";
+    let url = "https://api.openai.com/v1/chat/completions";
     // run the requester factory.
     let requester = requester::requester_factory(api_key.clone(), url.to_string());
     // Initialize the conversation object. This needs the model type and the vector of messages (empty vector here.)
@@ -119,7 +120,7 @@ async fn main() {
             let mut conversation_name = String::new();
             std::io::stdin().read_line(&mut conversation_name).expect("Failed to read line");
             let conversation_name = conversation_name.trim().to_string();
-            conversation = file_logic::file_logic::load_conversation(&conversation_name).await;
+            conversation = file_logic::file_logic::load_conversation(&conversation_name, &config.model_prompt).await;
             //conversation.display_conversation();
             continue;
         }

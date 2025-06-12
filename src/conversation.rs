@@ -10,18 +10,36 @@ pub mod convo {
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Conversation {
         pub model: String,
-        #[serde(rename = "input")]
         pub messages: Vec<ModelMessage>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub temperature: Option<f32>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub max_tokens: Option<u32>,
+
     }
 
     impl Conversation {
         // Sets the model type and a vector of model messages.
         pub fn new(model: String, messages: Vec<ModelMessage>) -> Self {
-            Conversation { model,   messages }
+            Conversation { model,   messages, temperature: None, max_tokens: None }
         }
 
         pub fn to_json(&self) -> String {
-            match serde_json::to_string(self) {
+            #[derive(Serialize)]
+            struct ConversationJson {
+                model: String,
+                messages: Vec<ModelMessageJson>,
+                temperature: Option<f32>,
+                max_tokens: Option<u32>,
+            }
+            #[derive(Serialize)]
+            struct ModelMessageJson {
+                role: String,
+                content: String,
+            }
+            let messages = self.messages.iter().map(|message| ModelMessageJson { role: message.role.clone(), content: message.content.clone() }).collect::<Vec<ModelMessageJson>>();
+            let conversation = ConversationJson { model: self.model.clone(), messages, temperature: self.temperature, max_tokens: self.max_tokens };
+            match serde_json::to_string(&conversation) {
                 Ok(json) => json,
                 Err(e) => {
                     println!("Error serializing conversation: {}", e);
